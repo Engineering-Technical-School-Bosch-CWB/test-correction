@@ -24,19 +24,22 @@ def splitBoxes(img, questions, options):
 
 def giveGrades(answers, rigthAnswers):
     grade = 0
-
+    
+    answersList = [0]
     for a in range(len(answers)):
         if sum(answers[a]) != 1 or (ord(rigthAnswers[a][1]) - 65) != np.argmax(answers[a]):
-            pass
+            answersList.append(0)
         else:
+            answersList.append(1)
             grade += rigthAnswers[a][0]
             answers[a][np.argmax(answers[a])] = -1
 
-    return answers, grade
+    return answers, grade, answersList
 
 def showAnswers(img, index, questions, choices, correctAnswers):
     secH = int(img.shape[1]/questions)
     secW = int(img.shape[0]/choices)
+
 
     for x in range(questions):
         if sum(index[x]) == -1:

@@ -1,14 +1,21 @@
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, jsonify
 import numpy as np
 import utils
 import cv2
 
 app = Flask(__name__)
+answersList = []
 searching = True
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', answers=answersList)
+
+@app.route('/update_variable')
+def update_variable():
+    global answersList
+    nova_variavel = ''.join(str(c) for c in answersList)
+    return jsonify(nova_variavel)
 
 @app.route('/takeimage', methods = ['POST'])
 def takeimage():
@@ -163,7 +170,9 @@ def gen():
                         countColumn += 1
                         if (countColumn == options): countRow += 1; countColumn = 0
 
-                    questionValues, grade = utils.giveGrades(questionValues, correctAnswers)
+                    questionValues, grade, newAnswersList = utils.giveGrades(questionValues, correctAnswers)
+                    global answersList
+                    answersList = newAnswersList
                     imgResult = np.zeros_like(clone)
                     imgResult = cv2.cvtColor(imgResult, cv2.COLOR_GRAY2BGR)
                     imgResult = utils.showAnswers(imgResult, questionValues, questions, options, correctAnswers)
