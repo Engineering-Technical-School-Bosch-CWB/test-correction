@@ -1,30 +1,142 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Video Streaming Demonstration</title>
-  </head>
-  <body>
-    <h1 id="answers"> {{ answers }} </h1>
-    <img src="{{ url_for('video_feed') }}">
-     <button onclick="search()" type="button">Procurar</button>
-     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-  </body>
-
-  <script>
-    let toggle = true;
-
-    function search() {
-      toggle = toggle ? false : true;
-      $.post("/takeimage",
-      {
-        toggle: toggle
-      });
-      $.ajax({
-        url: '/update_variable',
-        type: 'GET',
-        success: function(response) {
-          $('#answers').text(response);
-        }
-      })
-    }
-  </script>
+<head>
+	<meta charset="UTF-8">
+	<title>Processo Seletivo</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}">
+	<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+</head>
+<body>
+	<nav class="navLine"></nav>
+	<h9 id="answers"> {{ answers }} </h9>
+	<div class="pageContent">
+		<div class="pageThird">
+			<img src="{{ url_for('video_feed') }}">
+			<button class="searchStopButton" onclick="search()">Procurar/Parar</button>
+		</div>
+		<div class="pageThird">
+			<div class="titleProcesso">
+				<h4>Processo Seletivo</h1>
+			</div>
+			<div class="searchDiv">
+				<div class="wrapper">
+					<div class="select-btn">
+					  <span id="candidateName">Selecione o Candidato</span>
+					  <i class="uil uil-angle-down"></i>
+					</div>
+					<div class="content">
+					  <div class="search">
+						<i class="uil uil-search"></i>
+						<input spellcheck="false" type="text" placeholder="Pesquisar">
+					  </div>
+					  <ul class="options"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="personIdentity">
+				<h5>Como o candidato se autodeclarou?</h1>
+				<div class="myCheckboxes">
+					<div class="inputWithLabel">
+						<input class="simpleCheckbox" type="checkbox" id="branco" onclick="onlyOne(this)" name="checkBox">
+						<label for="branco">Branco</label>
+					</div>
+					<div class="inputWithLabel">
+						<input class="simpleCheckbox" type="checkbox" id="pardo" onclick="onlyOne(this)" name="checkBox">
+						<label for="pardo">Pardo</label>
+					</div>
+					<div class="inputWithLabel">
+						<input class="simpleCheckbox" type="checkbox" id="preto" onclick="onlyOne(this)" name="checkBox">
+						<label for="preto">Preto</label>
+					</div>
+						
+					<div class="inputWithLabel">
+						<input class="simpleCheckbox" type="checkbox" id="indigena" onclick="onlyOne(this)" name="checkBox">
+						<label for="indigena">Indígena</label>
+					</div>
+					
+					<div class="inputWithLabel">
+						<input class="simpleCheckbox" type="checkbox" id="no" onclick="onlyOne(this)" name="checkBox">
+						<label for="no">Não Declarou</label>
+					</div>
+				</div>
+			</div>
+			<div class="registerButtonDiv">
+				<button id="registerButton" class="registerButton">Registrar</button>
+			</div>
+		</div>
+		<div class="pageThird">
+			<div class="grid-container">
+				<div class="grid-column">
+					<div class="grid-item">1 | 27mm
+						<input class="simpleCheckbox" type="checkbox" id="question1" name="questionCheckBox">
+					</div>
+					<div class="grid-item">2 | C
+						<input class="simpleCheckbox" type="checkbox" id="question2" name="questionCheckBox">
+					</div>
+					<div class="grid-item">3 | E
+						<input class="simpleCheckbox" type="checkbox" id="question3" name="questionCheckBox">
+					</div>
+					<div class="grid-item">4 | A
+						<input class="simpleCheckbox" type="checkbox" id="question4" name="questionCheckBox">
+					</div>
+					<div class="grid-item">5 | B
+						<input class="simpleCheckbox" type="checkbox" id="question5" name="questionCheckBox">
+					</div>
+					<div class="grid-item">6 | Carla
+						<input class="simpleCheckbox" type="checkbox" id="question6" name="questionCheckBox">
+					</div>
+					<div class="grid-item">7 | D
+						<input class="simpleCheckbox" type="checkbox" id="question7" name="questionCheckBox">
+					</div>
+					<div class="grid-item">8 | 16
+						<input class="simpleCheckbox" type="checkbox" id="question8" name="questionCheckBox">
+					</div>
+					<div class="grid-item">9 | E
+						<input class="simpleCheckbox" type="checkbox" id="question9" name="questionCheckBox">
+					</div>
+					<div class="grid-item">10 | C
+						<input class="simpleCheckbox" type="checkbox" id="question10" name="questionCheckBox">
+					</div>
+				</div>
+				<div class="grid-column">
+					<div class="grid-item">11 | A
+						<input class="simpleCheckbox" type="checkbox" id="question11" name="questionCheckBox">
+					</div>
+					<div class="grid-item">12 | B
+						<input class="simpleCheckbox" type="checkbox" id="question12" name="questionCheckBox">
+					</div>
+					<div class="grid-item">13 | D
+						<input class="simpleCheckbox" type="checkbox" id="question13" name="questionCheckBox">
+					</div>
+					<div class="grid-item">14 | C
+						<input class="simpleCheckbox" type="checkbox" id="question14" name="questionCheckBox">
+					</div>
+					<div class="grid-item">15 | 180°C
+						<input class="simpleCheckbox" type="checkbox" id="question15" name="questionCheckBox">
+					</div>
+					<div class="grid-item">16 | A
+						<input class="simpleCheckbox" type="checkbox" id="question16" name="questionCheckBox">
+					</div>
+					<div class="grid-item">17 | E
+						<input class="simpleCheckbox" type="checkbox" id="question17" name="questionCheckBox">
+					</div>
+					<div class="grid-item">18 | D
+						<input class="simpleCheckbox" type="checkbox" id="question18" name="questionCheckBox">
+					</div>
+					<div class="grid-item">19 | B
+						<input class="simpleCheckbox" type="checkbox" id="question19" name="questionCheckBox">
+					</div>
+					<div class="grid-item">20 | B
+						<input class="simpleCheckbox" type="checkbox" id="question20" name="questionCheckBox">
+					</div>
+				</div>
+			  </div>
+		</div>
+	</div>
+	<!-- firebase -->
+	<script type="module" src="../static/database.js"></script>
+	<!-- main functions -->
+	<script src="../static/main.js"></script>
+</body>
 </html>
