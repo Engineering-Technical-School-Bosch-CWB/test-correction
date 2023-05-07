@@ -34,24 +34,24 @@ def gen():
     considerQuestion = 0
     questionsToIgnore = 3
     correctAnswers = ((6, 'C'), # 2 
-                    (6, 'B'), # 3
-                    (4, 'D'), # 4
+                    (6, 'E'), # 3
+                    (4, 'A'), # 4
                     (4, 'B'), # 5
                     (0, 'X'), # 6
-                    (6, 'A'), # 7
+                    (6, 'D'), # 7
                     (0, 'X'), # 8
-                    (4, 'B'), # 9
-                    (4, 'B'), # 10
-                    (4, 'D'), # 11
-                    (4, 'A'), # 12
-                    (4, 'A'), # 13
+                    (4, 'E'), # 9
+                    (4, 'C'), # 10
+                    (4, 'A'), # 11
+                    (4, 'B'), # 12
+                    (4, 'D'), # 13
                     (6, 'C'), # 14
                     (0, 'X'), # 15
-                    (4, 'B'), # 16
-                    (8, 'B'), # 17
-                    (4, 'B'), # 18
-                    (8, 'A'), # 19
-                    (8, 'C')) # 20
+                    (4, 'A'), # 16
+                    (8, 'E'), # 17
+                    (4, 'D'), # 18
+                    (8, 'B'), # 19
+                    (8, 'B')) # 20
 
 
     # Camera settings
@@ -183,7 +183,7 @@ def gen():
                     imgResultFinal = cv2.resize(imgResultFinal, (imgFinal.shape[1], imgFinal.shape[0]))
                     imgFinal = imgWarped.copy()
                     imgFinal = cv2.addWeighted(imgFinal, 1, imgResultFinal, 1, 0)
-                    imgFinal = cv2.putText(imgFinal, str(grade), (10, 250), cv2.FONT_HERSHEY_SIMPLEX, 10, (0, 255, 0), 20, cv2.LINE_AA)
+                    # imgFinal = cv2.putText(imgFinal, str(grade), (10, 250), cv2.FONT_HERSHEY_SIMPLEX, 10, (0, 255, 0), 20, cv2.LINE_AA)
 
                 except:
                     pass
