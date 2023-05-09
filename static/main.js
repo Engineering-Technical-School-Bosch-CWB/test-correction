@@ -1,33 +1,26 @@
 let toggle = true;
 
 function search() {
-    toggle = toggle ? false : true;
-    $.post("/takeimage",
-    {
-        toggle: toggle
-    });
+
     $.ajax({
         url: '/update_variable',
         type: 'GET',
         success: function(response) {
-        $('#answers').text(response);
+            if (response != "[]")
+            {
+                answersList = response.split('');
+                var questionCheckboxes = document.getElementsByName("questionCheckBox");
+                for (let i = 0; i < questionCheckboxes.length; i++)
+                    if (answersList[i] == "1")
+                        questionCheckboxes[i].checked = true;            
+                    else 
+                        questionCheckboxes[i].checked = false;
+            }
         }
     });
+    
+    
 
-    var answers = document.querySelector("#answers").innerHTML;
-    if (answers != "[]")
-    {
-        console.log(answers)
-        answersList = answers.split('');
-        var questionCheckboxes = document.getElementsByName("questionCheckBox");
-        for (let i = 0; i < questionCheckboxes.length; i++) {
-            console.log(answersList[i])
-            if (answersList[i] == "1")
-                questionCheckboxes[i].checked = true;            
-            else 
-                questionCheckboxes[i].checked = false;
-        }
-    }
 }
 
 // Checkboxes

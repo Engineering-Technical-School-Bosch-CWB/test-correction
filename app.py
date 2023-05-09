@@ -17,16 +17,6 @@ def update_variable():
     nova_variavel = ''.join(str(c) for c in answersList)
     return jsonify(nova_variavel)
 
-@app.route('/takeimage', methods = ['POST'])
-def takeimage():
-    search = request.form['toggle']
-    global searching
-    searching = search
-    image = cv2.imread('video.jpg')
-    imagecopy = np.copy(image)
-    cv2.imwrite(f'currentImage.jpg', imagecopy)
-    return Response(status = 200)
-
 def gen():
     # Test settings
     questions = 19
@@ -113,8 +103,7 @@ def gen():
                 imgCircles = cv2.cvtColor(imgWarped, cv2.COLOR_BGR2GRAY)
             except:
                 imgCircles = cv2.cvtColor(imgWarped, cv2.COLOR_BGR2GRAY)
-                imgWarped = cv2.putText(imgWarped,'ArUcos nao encontrados',(10,500), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 255, 0), 2, cv2.LINE_AA)
-            
+                
             imgCircles = cv2.resize(imgCircles, (900, 893))
             imgQuestions = imgCircles.copy()
             imgCircles = cv2.GaussianBlur(imgCircles, (5,5) , 1)

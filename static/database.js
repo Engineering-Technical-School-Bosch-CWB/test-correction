@@ -43,13 +43,19 @@ function cleanOptions()
 {
     candidateName.innerHTML = "Selecione o Candidato";
     var checkboxes = document.getElementsByName('checkBox')
-    var questionCheckboxes = document.getElementsByName("questionCheckBox");
     checkboxes.forEach((item) => {
         if (item.checked == true)
         {
             item.checked = false;
         }
     });
+
+    cleanQuestionCheckboxes();
+}
+
+function cleanQuestionCheckboxes()
+{
+    var questionCheckboxes = document.getElementsByName("questionCheckBox");
     questionCheckboxes.forEach((item) => {
         item.checked = false;
     });

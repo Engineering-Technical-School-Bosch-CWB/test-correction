@@ -40,7 +40,6 @@ def showAnswers(img, index, questions, choices, correctAnswers):
     secH = int(img.shape[1]/questions)
     secW = int(img.shape[0]/choices)
 
-
     for x in range(questions):
         if sum(index[x]) == -1:
             answer = np.argmin(index[x])
@@ -52,7 +51,7 @@ def showAnswers(img, index, questions, choices, correctAnswers):
             cX = int((answer*secW) + secW / 2)
             cY = int((x * secH) + secH / 2)
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 0, 255), -1)
-            cv2.circle(img, (int((ord(correctAnswers[x][1]) - 65) * secW + (secW / 2)), cY), 10, (0, 255, 0), -1)
+            # cv2.circle(img, (int((ord(correctAnswers[x][1]) - 65) * secW + (secW / 2)), cY), 10, (0, 255, 0), -1)
 
     return img
 
