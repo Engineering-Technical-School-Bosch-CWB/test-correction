@@ -1,5 +1,24 @@
 import numpy as np
+import openpyxl 
 import cv2
+
+def readExcelGabarito():
+    x = []
+    y = []
+    caminho = "Gabarito.xlsx"
+
+    df = openpyxl.load_workbook(caminho)
+    
+    df_obj = df.active
+    coluna = df_obj.max_row
+
+    for i in range(2, coluna + 1):
+        valor = df_obj.cell(row = i, column = 2)
+        gabarito = df_obj.cell(row = i, column = 3)
+        x.append((valor.value, str(gabarito.value)))
+        y.append(valor.value)
+
+    return x, y
 
 def warp(dict, img, imgWidth, imgHeight, inverse):
     if inverse:

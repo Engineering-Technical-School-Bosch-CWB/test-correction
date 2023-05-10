@@ -54,6 +54,7 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
     margin: 2%;
     height: 8%;
     width: 55%;
@@ -344,3 +345,7 @@ ul {
     height: 100%;
   }
 
+  .plainText {
+    margin: 0;
+    padding: 0;
+  }

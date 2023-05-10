@@ -25,18 +25,32 @@ var candidateName = document.querySelector("#candidateName");
 function getGrade()
 {
     let grade = 0;
-    var questionsPoints = [10, 6, 6, 4, 4, 8, 6, 10, 4, 4, 4, 4, 4, 6, 8, 4, 8, 4, 8, 8];
+    var answers = [];
+    let questionsPoints = []
+
+    $.ajax({
+        url: '/questionsValues',
+        type: 'GET',
+        datatype: "json",
+        async: false,
+        success: function(response) {
+            questionsPoints = response
+        }
+    });
 
     var questionsCheckboxes = document.getElementsByName('questionCheckBox');
     questionsCheckboxes.forEach((item) => {
         if (item.checked == true)
         {
+            answers.push(1);
             let question = (item.id).replace("question", "");
             grade += questionsPoints[parseInt(question) - 1];
         }
+        else
+            answers.push(0)
     })
 
-    return grade;
+    return grade, answers;
 }
 
 function cleanOptions()
@@ -78,13 +92,33 @@ function getActiveRace()
 function insertData()
 {	
     let candidateRace = getActiveRace();
-    let grade = getGrade();
+    let grade, answers = getGrade();
     if (candidateRace != "none" && candidateName.innerHTML != 'Selecione o Candidato')
     {
         set(ref(db, "Candidates/" + candidateName.innerHTML), {
             Nome: candidateName.innerHTML,
             Identificação: candidateRace,
-            Nota: grade
+            Nota: grade,
+            Questao1: answers[0],
+            Questao2: answers[1],
+            Questao3: answers[2],
+            Questao4: answers[3],
+            Questao5: answers[4],
+            Questao6: answers[5],
+            Questao7: answers[6],
+            Questao8: answers[7],
+            Questao9: answers[8],
+            Questao10: answers[9],
+            Questao11: answers[10],
+            Questao12: answers[11],
+            Questao13: answers[12],
+            Questao14: answers[13],
+            Questao15: answers[14],
+            Questao16: answers[15],
+            Questao17: answers[16],
+            Questao18: answers[17],
+            Questao19: answers[18],
+            Questao20: answers[19]
         })
         .then(() => { alert("Candidato avaliado!") })
         .catch((error) => { alert(error) });
@@ -104,7 +138,27 @@ function updateData()
         update(ref(db, "Candidates/" + candidateName.innerHTML) , {
             Nome: candidateName.innerHTML,
             Identificação: candidateRace,
-            Nota: grade
+            Nota: grade,
+            Questao1: answers[0],
+            Questao2: answers[1],
+            Questao3: answers[2],
+            Questao4: answers[3],
+            Questao5: answers[4],
+            Questao6: answers[5],
+            Questao7: answers[6],
+            Questao8: answers[7],
+            Questao9: answers[8],
+            Questao10: answers[9],
+            Questao11: answers[10],
+            Questao12: answers[11],
+            Questao13: answers[12],
+            Questao14: answers[13],
+            Questao15: answers[14],
+            Questao16: answers[15],
+            Questao17: answers[16],
+            Questao18: answers[17],
+            Questao19: answers[18],
+            Questao20: answers[19]
         })
         .then( () => {
             alert("Registro de candidato alterado");

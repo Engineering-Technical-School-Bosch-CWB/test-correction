@@ -1,5 +1,34 @@
 let toggle = true;
 
+let countries = []
+let testAnswers = []
+
+
+$.ajax({
+    url: '/candidates',
+    type: 'GET',
+    datatype: "json",
+    async: false,
+    success: function(response) {
+        countries = response
+    }
+});
+
+$.ajax({
+    url: '/getGabarito',
+    type: 'GET',
+    datatype: "json",
+    async: false,
+    success: function(response) {
+        testAnswers = response
+    }
+});
+
+let questions = document.getElementsByName("questionHtmlDiv");
+
+for (let index = 0; index < testAnswers.length; index++) 
+    questions[index].innerHTML = (index + 1) + " | " + testAnswers[index][1];
+
 function search() {
 
     $.ajax({
@@ -19,8 +48,6 @@ function search() {
         }
     });
     
-    
-
 }
 
 // Checkboxes
@@ -38,8 +65,6 @@ const wrapper = document.querySelector(".wrapper"),
 selectBtn = wrapper.querySelector(".select-btn"),
 searchInp = wrapper.querySelector("input"),
 options = wrapper.querySelector(".options");
-
-let countries = ["Maria Aparecida Silva","João Pedro Santos","Ana Luiza Oliveira","Lucas dos Santos Souza","Carla Fernanda Pereira","Rodrigo Almeida Costa","Larissa Lima Santos","Guilherme Castro Alves","Juliana de Souza Ferreira","Rafaela Nunes Cardoso","Pedro Henrique Rodrigues","Camila Vieira Gomes","Matheus Oliveira Martins","Isabela Silva Sousa","Thiago Ferreira Carvalho","Gabriela Costa Ribeiro","Fernando Alves Pereira","Bianca Santos Silva","Arthur Oliveira Lima","Amanda Castro Santos","Leonardo Carvalho Rodrigues","Giovanna Fernandes Souza","Ricardo Cardoso Nunes","Lívia Lima Almeida","Vinicius Pereira Gonçalves","Maria Clara Rodrigues Castro","Tiago Ferreira Almeida","Mariana Oliveira Costa","Diego Souza Ramos","Helena Martins Gomes","Luiz Henrique Silva Santos","Lara Nunes Oliveira","Renato Almeida Castro","Natália Costa Ferreira","Enzo Cardoso Sousa","Luana Ribeiro Carvalho","Daniel Pereira Alves","Gabrielle Santos Lima","Alexandre Rodrigues Castro","Leticia Ferreira Lima","Luciano Oliveira Santos","Sofia Sousa Almeida","Thales Gomes Pereira","Lorena Martins Silva","Júlio César Nunes Costa","Ana Beatriz Alves Rodrigues","Victor Hugo Souza Santos","Mariana Ferreira Oliveira","Lucas Cardoso Lima","Raquel Sousa Castro","Henrique Ribeiro Costa","Gabriela Almeida Carvalho","Felipe Santos Pereira","Carolina Lima Gomes","Pedro Castro Silva","Julia Rodrigues Oliveira","André Luiz Ferreira Santos","Isadora Costa Almeida","Matheus Nunes Sousa","Larissa Oliveira Ribeiro","Rafael Silva Martins","Beatriz Castro Lima","Rodrigo Souza Santos","Alice Carvalho Pereira","Leonardo Gomes Alves","Maria Eduarda Nunes Castro","Thiago Rodrigues Lima","Gabriela Costa Silva","Lucas Almeida Santos","Bianca Pereira Oliveira","Guilherme Lima Ferreira","Amanda Ribeiro Gomes","Luiz Felipe Martins Sousa","Vitória Santos Almeida","Rafaela Carvalho Costa","Gustavo Silva Rodrigues","Camila Castro Lima","Pedro Henrique Oliveira Santos","Mariana Ferreira Alves","Carlos Eduardo Lima Souza","Isabela Santos Costa","Ricardo Nunes Pereira","Lívia Almeida Rodrigues","Vinicius Castro Gomes"];
 
 function addCandidate(selectedCandidate) {
     options.innerHTML = "";
