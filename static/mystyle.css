@@ -152,6 +152,41 @@ input[type=checkbox] {
     background-color: #004975;
 }
 
+.resetButtonDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 2%;
+  width: 30%;
+  padding-top: 2.0vw;
+}
+
+.resetButton {
+  font-family: 'BoschSans-Light';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: underline;
+  height: 100%;
+  width: 55%;
+  font-weight: 100;
+  font-size: 15px;
+  font-size: 1.5vw;
+  color: rgb(150, 150, 150);
+  background-color: #ffffff;
+  border: none;
+}
+
+.resetButton:hover {
+  color: #737373;
+  cursor: pointer;
+}
+
+.resetButton:active {
+  color: #222222;
+}
+
 .titleProcesso {
     text-align: center;
 }

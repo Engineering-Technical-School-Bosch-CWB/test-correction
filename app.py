@@ -106,76 +106,58 @@ def gen():
                 
             imgCircles = cv2.resize(imgCircles, (900, 893))
             imgQuestions = imgCircles.copy()
-            imgCircles = cv2.GaussianBlur(imgCircles, (5,5) , 1)
-            circles = cv2.HoughCircles(imgCircles, cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
-            imgCircles = cv2.cvtColor(imgCircles, cv2.COLOR_GRAY2BGR)
 
+            try:
+                
+                tempNewX = 590
+                tempX = 345
+                tempNewY = 884
+                tempY = 287
 
-            if circles is not None:
-                try:
-                    circles = np.uint16(np.around(circles))
-                    for i in circles[0,:]:
-                        cv2.circle(imgCircles, (i[0], i[1]), i[2], (0, 255, 0), 2)
-                        pos.append(i[0] + i[1])
-                        posY.append(i[1])
-                        posX.append(i[0])
-                        
-                    posMax = max(pos)
-                    posMin = min(pos)
-                    posMaxIndex = pos.index(posMax)
-                    posMinIndex = pos.index(posMin)
-                    circleMaxSize = circles[0][posMaxIndex][2] 
-                    circleMinSize = circles[0][posMinIndex][2] 
-                    
-                    tempNewX = int(max(posX) + circleMaxSize * 1.5)
-                    tempX = int(min(posX) - circleMinSize * 1.5)
-                    tempNewY = int(max(posY) + circleMaxSize)
-                    tempY = int(min(posY) - circleMinSize)
+                clone = cv2.resize(imgWarped, (900, 893))
+                clone = cv2.cvtColor(clone, cv2.COLOR_BGR2GRAY)
+                imgCircles = cv2.rectangle(imgCircles, (tempNewX, tempNewY), (tempX, tempY), (0, 255, 0), 3)
+                imgQuestions = clone[tempY:tempNewY, tempX:tempNewX]
+                questionsW = imgQuestions.shape[1]
+                questionsY = imgQuestions.shape[0]
+                _, imgTresh = cv2.threshold(imgQuestions, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+                imgQuestions = cv2.resize(imgQuestions, (imgWidth, imgHeight))    
+                
+                imgTresh = cv2.resize(imgTresh, (900, 893))
+                boxes = utils.splitBoxes(imgTresh, questions, options)
 
-                    clone = cv2.resize(imgWarped, (900, 893))
-                    clone = cv2.cvtColor(clone, cv2.COLOR_BGR2GRAY)
-                    imgCircles = cv2.rectangle(imgCircles, (tempNewX, tempNewY), (tempX, tempY), (0, 255, 0), 3)
-                    imgQuestions = clone[tempY:tempNewY, tempX:tempNewX]
-                    questionsW = imgQuestions.shape[1]
-                    questionsY = imgQuestions.shape[0]
-                    _, imgTresh = cv2.threshold(imgQuestions, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-                    imgQuestions = cv2.resize(imgQuestions, (imgWidth, imgHeight))    
-                    
-                    imgTresh = cv2.resize(imgTresh, (900, 893))
-                    boxes = utils.splitBoxes(imgTresh, questions, options)
+                considerQuestion += cv2.countNonZero(imgTresh)
+                considerQuestion = int(considerQuestion/(len(boxes) - (questionsToIgnore * options)))
 
-                    considerQuestion += cv2.countNonZero(imgTresh)
-                    considerQuestion = int(considerQuestion/(len(boxes) - (questionsToIgnore * options)))
+                countColumn = 0
+                countRow = 0
 
-                    countColumn = 0
-                    countRow = 0
+                for image in boxes:
+                    marked = 0
+                    totalPixels = cv2.countNonZero(image)
+                    if totalPixels > considerQuestion: marked = 1
 
-                    for image in boxes:
-                        marked = 0
-                        totalPixels = cv2.countNonZero(image)
-                        if totalPixels > considerQuestion: marked = 1
+                    questionValues[countRow][countColumn] = marked
+                    countColumn += 1
+                    if (countColumn == options): countRow += 1; countColumn = 0
 
-                        questionValues[countRow][countColumn] = marked
-                        countColumn += 1
-                        if (countColumn == options): countRow += 1; countColumn = 0
+                questionValues, grade, newAnswersList = utils.giveGrades(questionValues, correctAnswers)
+                global answersList
+                answersList = newAnswersList
+                imgResult = np.zeros_like(clone)
+                imgResult = cv2.cvtColor(imgResult, cv2.COLOR_GRAY2BGR)
+                imgResult = utils.showAnswers(imgResult, questionValues, questions, options, correctAnswers)
+                imgResultScaled = cv2.resize(imgResult, (questionsW, questionsY))
+                tempImage = cv2.resize(imgWarped, (900, 893))
+                imgResultFinal = np.zeros_like(tempImage)
+                imgResultFinal[tempY:tempNewY, tempX:tempNewX] = imgResultScaled
+                imgResultFinal = cv2.resize(imgResultFinal, (imgFinal.shape[1], imgFinal.shape[0]))
+                imgFinal = imgWarped.copy()
+                imgFinal = cv2.addWeighted(imgFinal, 1, imgResultFinal, 1, 0)
+                # imgFinal = cv2.putText(imgFinal, str(grade), (10, 250), cv2.FONT_HERSHEY_SIMPLEX, 10, (0, 255, 0), 20, cv2.LINE_AA)
 
-                    questionValues, grade, newAnswersList = utils.giveGrades(questionValues, correctAnswers)
-                    global answersList
-                    answersList = newAnswersList
-                    imgResult = np.zeros_like(clone)
-                    imgResult = cv2.cvtColor(imgResult, cv2.COLOR_GRAY2BGR)
-                    imgResult = utils.showAnswers(imgResult, questionValues, questions, options, correctAnswers)
-                    imgResultScaled = cv2.resize(imgResult, (questionsW, questionsY))
-                    tempImage = cv2.resize(imgWarped, (900, 893))
-                    imgResultFinal = np.zeros_like(tempImage)
-                    imgResultFinal[tempY:tempNewY, tempX:tempNewX] = imgResultScaled
-                    imgResultFinal = cv2.resize(imgResultFinal, (imgFinal.shape[1], imgFinal.shape[0]))
-                    imgFinal = imgWarped.copy()
-                    imgFinal = cv2.addWeighted(imgFinal, 1, imgResultFinal, 1, 0)
-                    # imgFinal = cv2.putText(imgFinal, str(grade), (10, 250), cv2.FONT_HERSHEY_SIMPLEX, 10, (0, 255, 0), 20, cv2.LINE_AA)
-
-                except:
-                    pass
+            except:
+                pass
             
             try:
                 frame = imgFinal
