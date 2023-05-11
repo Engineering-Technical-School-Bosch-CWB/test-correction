@@ -2,6 +2,21 @@ import numpy as np
 import openpyxl 
 import cv2
 
+def readExcelNome():
+    x = []
+    caminho = "Nomes.xlsx"
+
+    df = openpyxl.load_workbook(caminho)
+    
+    df_obj = df.active
+    coluna = df_obj.max_row
+
+    for i in range(1, coluna + 1):
+        nome = df_obj.cell(row = i, column = 1)
+        x.append(nome.value)
+    
+    return x
+
 def readExcelGabarito():
     x = []
     y = []

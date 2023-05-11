@@ -50,7 +50,8 @@ function getGrade()
             answers.push(0)
     })
 
-    return grade, answers;
+    
+    return [grade, answers];
 }
 
 function cleanOptions()
@@ -92,33 +93,34 @@ function getActiveRace()
 function insertData()
 {	
     let candidateRace = getActiveRace();
-    let grade, answers = getGrade();
+    var grade = getGrade();
+
     if (candidateRace != "none" && candidateName.innerHTML != 'Selecione o Candidato')
     {
         set(ref(db, "Candidates/" + candidateName.innerHTML), {
             Nome: candidateName.innerHTML,
             Identificação: candidateRace,
-            Nota: grade,
-            Questao1: answers[0],
-            Questao2: answers[1],
-            Questao3: answers[2],
-            Questao4: answers[3],
-            Questao5: answers[4],
-            Questao6: answers[5],
-            Questao7: answers[6],
-            Questao8: answers[7],
-            Questao9: answers[8],
-            Questao10: answers[9],
-            Questao11: answers[10],
-            Questao12: answers[11],
-            Questao13: answers[12],
-            Questao14: answers[13],
-            Questao15: answers[14],
-            Questao16: answers[15],
-            Questao17: answers[16],
-            Questao18: answers[17],
-            Questao19: answers[18],
-            Questao20: answers[19]
+            Nota: grade[0],
+            Questao1: grade[1][0],
+            Questao2: grade[1][1],
+            Questao3: grade[1][2],
+            Questao4: grade[1][3],
+            Questao5: grade[1][4],
+            Questao6: grade[1][5],
+            Questao7: grade[1][6],
+            Questao8: grade[1][7],
+            Questao9: grade[1][8],
+            Questao10: grade[1][9],
+            Questao11: grade[1][10],
+            Questao12: grade[1][11],
+            Questao13: grade[1][12],
+            Questao14: grade[1][13],
+            Questao15: grade[1][14],
+            Questao16: grade[1][15],
+            Questao17: grade[1][16],
+            Questao18: grade[1][17],
+            Questao19: grade[1][18],
+            Questao20: grade[1][19]
         })
         .then(() => { alert("Candidato avaliado!") })
         .catch((error) => { alert(error) });
@@ -132,33 +134,33 @@ function insertData()
 function updateData()
 {
     let candidateRace = getActiveRace();
-    let grade = getGrade();
+    var grade = getGrade();
     if (candidateRace != "none" && candidateName.innerHTML != 'Selecione o Candidato')
     {
         update(ref(db, "Candidates/" + candidateName.innerHTML) , {
             Nome: candidateName.innerHTML,
             Identificação: candidateRace,
-            Nota: grade,
-            Questao1: answers[0],
-            Questao2: answers[1],
-            Questao3: answers[2],
-            Questao4: answers[3],
-            Questao5: answers[4],
-            Questao6: answers[5],
-            Questao7: answers[6],
-            Questao8: answers[7],
-            Questao9: answers[8],
-            Questao10: answers[9],
-            Questao11: answers[10],
-            Questao12: answers[11],
-            Questao13: answers[12],
-            Questao14: answers[13],
-            Questao15: answers[14],
-            Questao16: answers[15],
-            Questao17: answers[16],
-            Questao18: answers[17],
-            Questao19: answers[18],
-            Questao20: answers[19]
+            Nota: grade[0],
+            Questao1: grade[1][0],
+            Questao2: grade[1][1],
+            Questao3: grade[1][2],
+            Questao4: grade[1][3],
+            Questao5: grade[1][4],
+            Questao6: grade[1][5],
+            Questao7: grade[1][6],
+            Questao8: grade[1][7],
+            Questao9: grade[1][8],
+            Questao10: grade[1][9],
+            Questao11: grade[1][10],
+            Questao12: grade[1][11],
+            Questao13: grade[1][12],
+            Questao14: grade[1][13],
+            Questao15: grade[1][14],
+            Questao16: grade[1][15],
+            Questao17: grade[1][16],
+            Questao18: grade[1][17],
+            Questao19: grade[1][18],
+            Questao20: grade[1][19]
         })
         .then( () => {
             alert("Registro de candidato alterado");
