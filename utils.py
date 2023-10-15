@@ -2,38 +2,78 @@ import numpy as np
 import openpyxl 
 import cv2
 
-def readExcelNome():
-    x = []
-    caminho = "Nomes.xlsx"
-
-    df = openpyxl.load_workbook(caminho)
-    
-    df_obj = df.active
-    coluna = df_obj.max_row
-
-    for i in range(1, coluna + 1):
-        nome = df_obj.cell(row = i, column = 1)
-        x.append(nome.value)
-    
-    return x
-
 def readExcelGabarito():
-    x = []
-    y = []
-    caminho = "Gabarito.xlsx"
+    gabarito = []
+    pontuacao = []
+    caminho = "ProcessoSeletivo.xlsx"
 
     df = openpyxl.load_workbook(caminho)
     
-    df_obj = df.active
-    coluna = df_obj.max_row
+    sheet = df["Gabarito"]
+    column = sheet.max_row
+
+    for i in range(2, column + 1):
+        valor = sheet.cell(row = i, column = 2)
+        resposta = sheet.cell(row = i, column = 3)
+        gabarito.append((valor.value, str(resposta.value)))
+        pontuacao.append(sheet.cell(row = i, column = 1).value)
+
+    return gabarito, pontuacao
+
+def readExcelNome():
+    names = []
+    caminho = "ProcessoSeletivo.xlsx"
+
+    df = openpyxl.load_workbook(caminho)
+    
+    sheet = df["Nomes"]
+    coluna = sheet.max_row
 
     for i in range(2, coluna + 1):
-        valor = df_obj.cell(row = i, column = 2)
-        gabarito = df_obj.cell(row = i, column = 3)
-        x.append((valor.value, str(gabarito.value)))
-        y.append(valor.value)
+        nome = sheet.cell(row = i, column = 1)
+        names.append(nome.value)
 
-    return x, y
+    return names
+
+def registerCandidate(candidate, race, answers, grade):
+    caminho = "ProcessoSeletivo.xlsx"
+
+    df = openpyxl.load_workbook(caminho)
+    sheet = df["Registros"]
+    exists, line = findCandidate(candidate)
+    row = sheet.max_row + 1
+
+    if (exists):
+        row = line
+
+    sheet.cell(row=row, column=1).value = candidate
+    sheet.cell(row=row, column=2).value = grade
+    sheet.cell(row=row, column=3).value = race
+    
+    for i in range(len(answers)):
+        sheet.cell(row=row, column=i + 4).value = answers[i]
+
+    df.save("ProcessoSeletivo.xlsx")
+    
+    return "Success", 200
+
+def findCandidate(candidate):
+    caminho = "ProcessoSeletivo.xlsx"
+    exists = False
+    line = 1
+
+    df = openpyxl.load_workbook(caminho)
+    sheet = df["Registros"]
+    linha = sheet.max_row 
+
+    for i in range(1, linha + 1):
+        line = i
+        nome = sheet.cell(row = i, column = 1)
+        if (nome.value == candidate):
+            exists = True
+            break
+    
+    return exists, line
 
 def warp(dict, img, imgWidth, imgHeight, inverse):
     if inverse:
@@ -46,20 +86,23 @@ def warp(dict, img, imgWidth, imgHeight, inverse):
     dst = cv2.warpPerspective(img, M, (imgWidth, imgHeight))
     return dst
 
-def splitBoxes(img, questions, options):
+def splitBoxes(img, questions, options, questionsOverlapMargin):
+    total = 0
+    
     rows = np.vsplit(img, questions)
     boxes = []
     for r in rows:
         cols = np.hsplit(r, options)
         for box in cols:
-            boxes.append(box)
+            total += np.count_nonzero(box[questionsOverlapMargin:box.shape[0]-questionsOverlapMargin, questionsOverlapMargin:box.shape[1]-questionsOverlapMargin])
+            boxes.append(box[questionsOverlapMargin:box.shape[0]-questionsOverlapMargin, questionsOverlapMargin:box.shape[1]-questionsOverlapMargin])
 
-    return boxes
+    return boxes, int(total/(questions*options))
 
 def giveGrades(answers, rigthAnswers):
     grade = 0
     
-    answersList = [0]
+    answersList = []
     for a in range(len(answers)):
         if sum(answers[a]) != 1 or (ord(rigthAnswers[a][1]) - 65) != np.argmax(answers[a]):
             answersList.append(0)
@@ -70,57 +113,20 @@ def giveGrades(answers, rigthAnswers):
 
     return answers, grade, answersList
 
-def showAnswers(img, index, questions, choices, correctAnswers):
-    secH = int(img.shape[1]/questions)
-    secW = int(img.shape[0]/choices)
+def showAnswers(img, answers, questions, choices):
+    optionH = int(img.shape[1]/questions)
+    optionW = int(img.shape[0]/choices)
 
-    for x in range(questions):
-        if sum(index[x]) == -1:
-            answer = np.argmin(index[x])
-            cX = int((answer*secW) + secW / 2)
-            cY = int((x * secH) + secH / 2)
+    for currentRow in range(questions):
+        if sum(answers[currentRow]) == -1:
+            answer = np.argmin(answers[currentRow])
+            cX = int((answer*optionW) + optionW / 2)
+            cY = int((currentRow * optionH) + optionH / 2)
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 255, 0), -1)
-        elif (sum(index[x]) == 1):
-            answer = np.argmax(index[x])
-            cX = int((answer*secW) + secW / 2)
-            cY = int((x * secH) + secH / 2)
+        elif (sum(answers[currentRow]) == 1):
+            answer = np.argmax(answers[currentRow])
+            cX = int((answer*optionW) + optionW / 2)
+            cY = int((currentRow * optionH) + optionH / 2)
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 0, 255), -1)
-            # cv2.circle(img, (int((ord(correctAnswers[x][1]) - 65) * secW + (secW / 2)), cY), 10, (0, 255, 0), -1)
 
     return img
-
-def stackImages(imgArray,scale,lables=[]):
-    rows = len(imgArray)
-    cols = len(imgArray[0])
-    rowsAvailable = isinstance(imgArray[0], list)
-    width = imgArray[0][0].shape[1]
-    height = imgArray[0][0].shape[0]
-    if rowsAvailable:
-        for x in range ( 0, rows):
-            for y in range(0, cols):
-                imgArray[x][y] = cv2.resize(imgArray[x][y], (0, 0), None, scale, scale)
-                if len(imgArray[x][y].shape) == 2: imgArray[x][y]= cv2.cvtColor( imgArray[x][y], cv2.COLOR_GRAY2BGR)
-        imageBlank = np.zeros((height, width, 3), np.uint8)
-        hor = [imageBlank]*rows
-        hor_con = [imageBlank]*rows
-        for x in range(0, rows):
-            hor[x] = np.hstack(imgArray[x])
-            hor_con[x] = np.concatenate(imgArray[x])
-        ver = np.vstack(hor)
-        ver_con = np.concatenate(hor)
-    else:
-        for x in range(0, rows):
-            imgArray[x] = cv2.resize(imgArray[x], (0, 0), None, scale, scale)
-            if len(imgArray[x].shape) == 2: imgArray[x] = cv2.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
-        hor= np.hstack(imgArray)
-        hor_con= np.concatenate(imgArray)
-        ver = hor
-    if len(lables) != 0:
-        eachImgWidth= int(ver.shape[1] / cols)
-        eachImgHeight = int(ver.shape[0] / rows)
-        #print(eachImgHeight)
-        for d in range(0, rows):
-            for c in range (0,cols):
-                cv2.rectangle(ver,(c*eachImgWidth,eachImgHeight*d),(c*eachImgWidth+len(lables[d][c])*13+27,30+eachImgHeight*d),(255,255,255),cv2.FILLED)
-                cv2.putText(ver,lables[d][c],(eachImgWidth*c+10,eachImgHeight*d+20),cv2.FONT_HERSHEY_COMPLEX,0.7,(255,0,255),2)
-    return ver
