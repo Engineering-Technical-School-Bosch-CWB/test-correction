@@ -1,9 +1,11 @@
 import cv2 
 import utils
+import webview
 import numpy as np
 from flask import Flask, render_template, Response, request, jsonify, json
 
 app = Flask(__name__)
+window = webview.create_window("Scanner Ets", app)
 
 # Camera settings
 vid_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -156,5 +158,4 @@ def video_feed():
     return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run()
-    # app.debug = True
+    webview.start()
