@@ -16,8 +16,12 @@ window = webview.create_window("Scanner Ets", app)
 if hasattr(sys, '_MEIPASS'):
     base_dir = os.path.join(sys._MEIPASS)
 
+_availableCams = utils.listAvailableCams()
+# _selectedCam = _availableCams[len(_availableCams) - 1]
+_selectedCam = 0
+
 # Camera settings
-vid_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+vid_capture = cv2.VideoCapture(_selectedCam, cv2.CAP_DSHOW)
 vid_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 vid_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 vid_capture.set(cv2.CAP_PROP_AUTOFOCUS, 0)

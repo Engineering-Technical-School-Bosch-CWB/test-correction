@@ -130,3 +130,12 @@ def showAnswers(img, answers, questions, choices):
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 0, 255), -1)
 
     return img
+
+def listAvailableCams(max_cameras = 10):
+    cameras_disponiveis = []
+    for index in range(max_cameras):
+        cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)  # No Windows, use CAP_DSHOW
+        if cap is not None and cap.isOpened():
+            cameras_disponiveis.append(index)
+            cap.release()
+    return cameras_disponiveis
