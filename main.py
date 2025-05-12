@@ -121,7 +121,7 @@ def gen():
 
             imgWarped = utils.warp(arUcosCornerPositions,
                                    frame, imgWidth, imgHeight, False)
-
+            
             upLeftCirclesRecX = answersCorners[0][0]
             upLeftCirclesRecY = answersCorners[0][1]
             downRightCirclesRecX = answersCorners[1][0]
@@ -132,12 +132,20 @@ def gen():
             imgQuestions = cv2.cvtColor(imgQuestions, cv2.COLOR_BGR2GRAY)
             imgQuestionsW = imgQuestions.shape[1]
             imgQuestionsH = imgQuestions.shape[0]
-            _, imgTresh = cv2.threshold(
-                imgQuestions, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+            
+            #aplicando filtro gaussian
+            imgQuestions = cv2.GaussianBlur(imgQuestions, (5,5), 0)
+
+            _, imgTresh = cv2.threshold(imgQuestions, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_TOZERO_INV )
+            #kernel para morfologia
+            kernel = np.ones((3,3), np.uint8)
+            #aplicando morfologia
+            imgTresh = cv2.morphologyEx(imgTresh, cv2.MORPH_OPEN, kernel)
 
             imgTresh = cv2.resize(imgTresh, (640, 480))
             boxes, considerQuestion = utils.splitBoxes(
                 imgTresh, questions, options, questionsOverlapMargin)
+
 
             countColumn = 0
             countRow = 0
@@ -156,14 +164,14 @@ def gen():
                     countRow += 1
                     countColumn = 0
 
-            questionValues, grade, answers = utils.giveGrades(
+            questionValues2, grade, answers = utils.giveGrades(
                 questionValues, correctAnswers)
             global answersList
             answersList = answers
             blankImage = cv2.resize(cv2.cvtColor(np.zeros_like(
                 imgQuestions), cv2.COLOR_GRAY2BGR), (640, 640))
             blankImageWithFeedback = utils.showAnswers(
-                blankImage, questionValues, questions, options)
+                blankImage, questionValues2, questions, options)
             blankImageWithFeedback = cv2.resize(
                 blankImageWithFeedback, (imgQuestionsW, imgQuestionsH))
 
@@ -177,7 +185,46 @@ def gen():
                 imgFinal = frame
 
             imgFinal = cv2.resize(imgFinal, (340, 620))
-            cv2.imwrite('video.jpg', imgFinal)
+
+            #! ------ test ------
+
+            # Criação do fundo preto com 1080x720
+            fundo = np.zeros((720, 1080, 3), dtype=np.uint8)
+
+            # Dimensões de cada bloco
+            bloco_larg = 1080 // 4
+            bloco_alt = 720 // 2
+
+            # Converte imagens em grayscale para BGR, se necessário
+            imgQuestions_color = cv2.cvtColor(imgQuestions, cv2.COLOR_GRAY2BGR)
+            imgTresh_color = cv2.cvtColor((imgTresh * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+
+            # Redimensiona todas as imagens antes de inserir no fundo
+            imgWarped_resized              = cv2.resize(imgWarped, (bloco_larg, bloco_alt))
+            imgQuestions_resized           = cv2.resize(imgQuestions_color, (bloco_larg, bloco_alt))
+            imgThresh_resized              = cv2.resize(imgTresh_color, (bloco_larg, bloco_alt))
+            resizedImageWithFeedback_res   = cv2.resize(resizedImageWithFeedback, (bloco_larg, bloco_alt))
+            blankImage_resized             = cv2.resize(blankImage, (bloco_larg, bloco_alt))
+            blankImageWithFeedback_res     = cv2.resize(blankImageWithFeedback, (bloco_larg, bloco_alt))
+            imgFinal_resized               = cv2.resize(imgFinal, (bloco_larg, bloco_alt))
+
+            # Monta os 8 blocos no fundo
+            fundo[0 * bloco_alt:1 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = imgWarped_resized
+            fundo[0 * bloco_alt:1 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = imgQuestions_resized
+            fundo[0 * bloco_alt:1 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = imgThresh_resized
+            fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = resizedImageWithFeedback_res
+
+            fundo[1 * bloco_alt:2 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = blankImage_resized
+            fundo[1 * bloco_alt:2 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = blankImageWithFeedback_res
+            fundo[1 * bloco_alt:2 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = resizedImageWithFeedback_res
+            fundo[1 * bloco_alt:2 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = imgFinal_resized
+
+            cv2.imshow("teste TOZERO INV", fundo)
+
+            #! ------ test ------
+            
+            cv2.imwrite('video.jpg', imgWarped)
+
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + open('video.jpg', 'rb').read() + b'\r\n')
 
