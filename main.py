@@ -114,7 +114,6 @@ def gen():
                 gray, aruco_dict, parameters=parameters)
 
             if len(corners) > 0:
-
                 for i in range(0, len(ids)):
                     arUcosCornerPositions[ids[i][0]] = corners[i][0][0]
                     cv2.aruco.drawDetectedMarkers(gray, corners, ids)
@@ -134,18 +133,15 @@ def gen():
             imgQuestionsH = imgQuestions.shape[0]
             
             #aplicando filtro gaussian
-            imgQuestions = cv2.GaussianBlur(imgQuestions, (5,5), 0)
-
-            _, imgTresh = cv2.threshold(imgQuestions, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_TOZERO_INV )
-            #kernel para morfologia
-            kernel = np.ones((3,3), np.uint8)
-            #aplicando morfologia
-            imgTresh = cv2.morphologyEx(imgTresh, cv2.MORPH_OPEN, kernel)
+            blurred = cv2.GaussianBlur(imgQuestions, (9,9), 0)
+            normalizated = cv2.normalize(blurred, None, 0, 255, cv2.NORM_MINMAX)
+            _, imgTresh = cv2.threshold(normalizated, 215, 255, cv2.THRESH_BINARY)
+            kernel = np.ones((30,30), np.uint8)
+            imgTresh = cv2.morphologyEx(imgTresh, cv2.MORPH_CLOSE, kernel)
 
             imgTresh = cv2.resize(imgTresh, (640, 480))
             boxes, considerQuestion = utils.splitBoxes(
                 imgTresh, questions, options, questionsOverlapMargin)
-
 
             countColumn = 0
             countRow = 0
@@ -154,7 +150,7 @@ def gen():
                 marked = 0
                 totalPixels = cv2.countNonZero(image)
 
-                if totalPixels > considerQuestion:
+                if totalPixels < considerQuestion:
                     marked = 1
 
                 questionValues[countRow][countColumn] = marked
@@ -197,14 +193,17 @@ def gen():
 
             # Converte imagens em grayscale para BGR, se necessário
             imgQuestions_color = cv2.cvtColor(imgQuestions, cv2.COLOR_GRAY2BGR)
-            imgTresh_color = cv2.cvtColor((imgTresh * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+            blurred_color = cv2.cvtColor(blurred, cv2.COLOR_GRAY2BGR)
+            imgTresh_color = cv2.cvtColor(imgTresh , cv2.COLOR_GRAY2BGR)
+            normalizated = cv2.cvtColor((normalizated * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
             # Redimensiona todas as imagens antes de inserir no fundo
             imgWarped_resized              = cv2.resize(imgWarped, (bloco_larg, bloco_alt))
             imgQuestions_resized           = cv2.resize(imgQuestions_color, (bloco_larg, bloco_alt))
             imgThresh_resized              = cv2.resize(imgTresh_color, (bloco_larg, bloco_alt))
+            blurred_resized               = cv2.resize(blurred_color, (bloco_larg, bloco_alt))
             resizedImageWithFeedback_res   = cv2.resize(resizedImageWithFeedback, (bloco_larg, bloco_alt))
-            blankImage_resized             = cv2.resize(blankImage, (bloco_larg, bloco_alt))
+            blankImage_resized             = cv2.resize(normalizated, (bloco_larg, bloco_alt))
             blankImageWithFeedback_res     = cv2.resize(blankImageWithFeedback, (bloco_larg, bloco_alt))
             imgFinal_resized               = cv2.resize(imgFinal, (bloco_larg, bloco_alt))
 
@@ -212,7 +211,7 @@ def gen():
             fundo[0 * bloco_alt:1 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = imgWarped_resized
             fundo[0 * bloco_alt:1 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = imgQuestions_resized
             fundo[0 * bloco_alt:1 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = imgThresh_resized
-            fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = resizedImageWithFeedback_res
+            fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = blurred_resized
 
             fundo[1 * bloco_alt:2 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = blankImage_resized
             fundo[1 * bloco_alt:2 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = blankImageWithFeedback_res
