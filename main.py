@@ -36,6 +36,7 @@ questionsOverlapMargin = 5
 considerQuestion = 0
 correctAnswers, _ = utils.readExcelGabarito()
 answersList = []
+answersListWithOptions = []
 candidate = utils.readExcelNome()
 
 # Aruco settings
@@ -62,8 +63,7 @@ def register():
     race = request.form.get('race')
     grade = request.form.get('grade')
     answers = request.form.get('answers')
-
-    return utils.registerCandidate(candidate, race, answers, grade)
+    return utils.registerCandidate(candidate, race, answers, grade, answersListWithOptions)
 
 
 @app.route('/candidate', methods=['GET'])
@@ -162,7 +162,8 @@ def gen():
 
             questionValues2, grade, answers = utils.giveGrades(
                 questionValues, correctAnswers)
-            global answersList
+            global answersList, answersListWithOptions
+            answersListWithOptions = questionValues2
             answersList = answers
             blankImage = cv2.resize(cv2.cvtColor(np.zeros_like(
                 imgQuestions), cv2.COLOR_GRAY2BGR), (640, 640))

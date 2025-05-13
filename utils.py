@@ -35,7 +35,7 @@ def readExcelNome():
 
     return names
 
-def registerCandidate(candidate, race, answers, grade):
+def registerCandidate(candidate, race, answers, grade, answersWithOptions):
     caminho = "ProcessoSeletivo.xlsx"
 
     df = openpyxl.load_workbook(caminho)
@@ -49,9 +49,21 @@ def registerCandidate(candidate, race, answers, grade):
     sheet.cell(row=row, column=1).value = candidate
     sheet.cell(row=row, column=2).value = grade
     sheet.cell(row=row, column=3).value = race
-    
-    for i in range(len(answers)):
-        sheet.cell(row=row, column=i + 4).value = answers[i]
+
+    _option = ['a','b','c','d','e']
+    _answers = []
+    for i in range(20):
+        added = False
+        for j in range(5):
+            if answersWithOptions[i][j] != 0:
+                _answers.append(_option[j])
+                added = True
+                break
+        if(not added):
+            _answers.append("-")
+            
+    for i in range(len(_answers)):
+        sheet.cell(row=row, column=i + 4).value = _answers[i]
 
     df.save("ProcessoSeletivo.xlsx")
     

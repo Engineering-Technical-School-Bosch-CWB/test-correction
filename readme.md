@@ -34,7 +34,7 @@ Você com toda certeza pode fazer um trabalho muito melhor e com tempo em relaç
 
 ###### Extração do gabarito
 
-![alt text](cvReadme.png)
+![alt text](./docs/cvReadme.png)
 
 Explicando em alguns passos, seguindo a imagem de referência ^
 
@@ -67,7 +67,7 @@ answersCorners = [(590, 583), (925, 1903)]
 pode ser um pouco confuso, basicamente são duas coordenadas, xy e xy
 Se refêrem a esses cantos em azul (superior esquerdo e inferior direito)
 
-![alt text](cornersReadme.png)
+![alt text](./docs/cornersReadme.png)
 
 arUcoPoints = [326, 683, 779, 856]
 Cada número se refere a um aruco, assim como um qr code costuma ter uma url, um aruco tem um valor e eles estão nessa ordem no padrão de teste que gerei
