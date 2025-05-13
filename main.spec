@@ -3,15 +3,16 @@
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=['./releases/v2.0/'],
     binaries=[],
-    datas=[('templates', 'templates'), ('static', 'static')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
+    optimize=0,
 )
 pyz = PYZ(a.pure)
 
@@ -28,7 +29,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

@@ -86,7 +86,15 @@ def warp(dict, img, imgWidth, imgHeight, inverse):
     dst = cv2.warpPerspective(img, M, (imgWidth, imgHeight))
     return dst
 
+# 
+
 def splitBoxes(img, questions, options, questionsOverlapMargin):
+    """
+        A method to verify if user marked an option by question\n
+        options = option of question (A,B,C,D,E...)\n
+        question = question of test (1 ~ 20)
+
+    """
     total = 0
     
     rows = np.vsplit(img, questions)

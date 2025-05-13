@@ -198,31 +198,31 @@ def gen():
             normalizated = cv2.cvtColor((normalizated * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
             # Redimensiona todas as imagens antes de inserir no fundo
-            imgWarped_resized              = cv2.resize(imgWarped, (bloco_larg, bloco_alt))
-            imgQuestions_resized           = cv2.resize(imgQuestions_color, (bloco_larg, bloco_alt))
-            imgThresh_resized              = cv2.resize(imgTresh_color, (bloco_larg, bloco_alt))
-            blurred_resized               = cv2.resize(blurred_color, (bloco_larg, bloco_alt))
-            resizedImageWithFeedback_res   = cv2.resize(resizedImageWithFeedback, (bloco_larg, bloco_alt))
-            blankImage_resized             = cv2.resize(normalizated, (bloco_larg, bloco_alt))
-            blankImageWithFeedback_res     = cv2.resize(blankImageWithFeedback, (bloco_larg, bloco_alt))
-            imgFinal_resized               = cv2.resize(imgFinal, (bloco_larg, bloco_alt))
+            # imgWarped_resized              = cv2.resize(imgWarped, (bloco_larg, bloco_alt))
+            # imgQuestions_resized           = cv2.resize(imgQuestions_color, (bloco_larg, bloco_alt))
+            # imgThresh_resized              = cv2.resize(imgTresh_color, (bloco_larg, bloco_alt))
+            # blurred_resized               = cv2.resize(blurred_color, (bloco_larg, bloco_alt))
+            # resizedImageWithFeedback_res   = cv2.resize(resizedImageWithFeedback, (bloco_larg, bloco_alt))
+            # blankImage_resized             = cv2.resize(normalizated, (bloco_larg, bloco_alt))
+            # blankImageWithFeedback_res     = cv2.resize(blankImageWithFeedback, (bloco_larg, bloco_alt))
+            # imgFinal_resized               = cv2.resize(imgFinal, (bloco_larg, bloco_alt))
 
-            # Monta os 8 blocos no fundo
-            fundo[0 * bloco_alt:1 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = imgWarped_resized
-            fundo[0 * bloco_alt:1 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = imgQuestions_resized
-            fundo[0 * bloco_alt:1 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = imgThresh_resized
-            fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = blurred_resized
+            # # Monta os 8 blocos no fundo
+            # fundo[0 * bloco_alt:1 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = imgWarped_resized
+            # fundo[0 * bloco_alt:1 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = imgQuestions_resized
+            # fundo[0 * bloco_alt:1 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = imgThresh_resized
+            # fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = blurred_resized
 
-            fundo[1 * bloco_alt:2 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = blankImage_resized
-            fundo[1 * bloco_alt:2 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = blankImageWithFeedback_res
-            fundo[1 * bloco_alt:2 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = resizedImageWithFeedback_res
-            fundo[1 * bloco_alt:2 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = imgFinal_resized
+            # fundo[1 * bloco_alt:2 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = blankImage_resized
+            # fundo[1 * bloco_alt:2 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = blankImageWithFeedback_res
+            # fundo[1 * bloco_alt:2 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = resizedImageWithFeedback_res
+            # fundo[1 * bloco_alt:2 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = imgFinal_resized
 
-            cv2.imshow("teste TOZERO INV", fundo)
+            # cv2.imshow("teste TOZERO INV", fundo)
 
             #! ------ test ------
             
-            cv2.imwrite('video.jpg', imgWarped)
+            cv2.imwrite('video.jpg', imgFinal)
 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + open('video.jpg', 'rb').read() + b'\r\n')
