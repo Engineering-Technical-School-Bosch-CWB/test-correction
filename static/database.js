@@ -106,7 +106,7 @@ function register()
 {
     let candidateRace = getActiveRace();
 
-    if (candidateRace != "none" && candidateName.innerHTML != 'Selecione o Candidato')
+    if (candidateName.innerHTML != 'Selecione o Candidato')
     {
         $.ajax({
             url: '/candidate',

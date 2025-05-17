@@ -71,3 +71,9 @@ Se refêrem a esses cantos em azul (superior esquerdo e inferior direito)
 
 arUcoPoints = [326, 683, 779, 856]
 Cada número se refere a um aruco, assim como um qr code costuma ter uma url, um aruco tem um valor e eles estão nessa ordem no padrão de teste que gerei
+
+
+Para gerar um executável:
+```bash
+$ auto-py-to-exe
+```

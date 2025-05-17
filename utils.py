@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import openpyxl 
 import cv2
@@ -150,6 +151,25 @@ def showAnswers(img, answers, questions, choices):
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 0, 255), -1)
 
     return img
+
+#! ================== making debug image to view data ============================
+
+def showDebug(images, width = 1080, height = 720, title= "debug"):
+    background = np.zeros((height, width, 3), dtype=np.uint8)
+    img_height = int(height / 2)
+    img_width = int(width / 4)
+    for i in range(len(images)):
+        if len(images[i].shape) == 2:
+            images[i] = cv2.cvtColor(images[i], cv2.COLOR_GRAY2BGR)
+        images[i] = cv2.resize(images[i], (img_width, img_height))
+        line = math.floor(i / 4)
+        column = i % 4
+        background[
+            line * img_height : (line + 1) * img_height,
+            column * img_width: img_width * (column + 1)
+            ] = images[i]
+        cv2.imshow(title, background)
+
 
 def listAvailableCams(max_cameras = 10):
     cameras_disponiveis = []

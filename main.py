@@ -18,7 +18,7 @@ if hasattr(sys, '_MEIPASS'):
 
 _availableCams = utils.listAvailableCams()
 # _selectedCam = _availableCams[len(_availableCams) - 1]
-_selectedCam = 0
+_selectedCam = 1
 
 # Camera settings
 vid_capture = cv2.VideoCapture(_selectedCam, cv2.CAP_DSHOW)
@@ -29,7 +29,7 @@ vid_capture.set(cv2.CAP_PROP_FOURCC,
                 cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 
 # Test settings & variables
-answersCorners = [(590, 583), (925, 1903)]
+answersCorners = [(590, 520), (915, 1885)]
 questions = 20
 options = 5
 questionsOverlapMargin = 5
@@ -56,6 +56,9 @@ def index():
 def candidates():
     return candidate
 
+# @app.route("/getCams")
+# def getCams():
+#     return (_availableCams, _selectedCam)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -121,6 +124,14 @@ def gen():
             imgWarped = utils.warp(arUcosCornerPositions,
                                    frame, imgWidth, imgHeight, False)
             
+            imgWarpedWithCoordinates = cv2.circle(imgWarped, 
+                                                  (answersCorners[0][0], answersCorners[0][1]),
+                                                  10, (0,255,0), -1)
+            
+            imgWarpedWithCoordinates = cv2.circle(imgWarped, 
+                                                  (answersCorners[1][0], answersCorners[1][1]),
+                                                  10, (0,0,255), -1)
+
             upLeftCirclesRecX = answersCorners[0][0]
             upLeftCirclesRecY = answersCorners[0][1]
             downRightCirclesRecX = answersCorners[1][0]
@@ -178,51 +189,25 @@ def gen():
             imgFinal = cv2.addWeighted(
                 imgWarped, 1, resizedImageWithFeedback, 1, 0)
 
+            #print(np.sum(imgFinal == 0))
             if (np.sum(imgFinal == 0) > 5000 or np.max(imgFinal) - np.min(imgFinal) < 200):
+                print(f"{np.max(imgFinal)} - {np.min(imgFinal)}")
                 imgFinal = frame
 
             imgFinal = cv2.resize(imgFinal, (340, 620))
 
-            #! ------ test ------
+            utils.showDebug(
+                [
+                    imgWarpedWithCoordinates,
+                    imgQuestions,
+                    imgTresh,
+                    blurred,
+                    resizedImageWithFeedback,
+                    normalizated,
+                    blankImageWithFeedback,
+                    imgFinal
+                ])
 
-            # Criação do fundo preto com 1080x720
-            fundo = np.zeros((720, 1080, 3), dtype=np.uint8)
-
-            # Dimensões de cada bloco
-            bloco_larg = 1080 // 4
-            bloco_alt = 720 // 2
-
-            # Converte imagens em grayscale para BGR, se necessário
-            imgQuestions_color = cv2.cvtColor(imgQuestions, cv2.COLOR_GRAY2BGR)
-            blurred_color = cv2.cvtColor(blurred, cv2.COLOR_GRAY2BGR)
-            imgTresh_color = cv2.cvtColor(imgTresh , cv2.COLOR_GRAY2BGR)
-            normalizated = cv2.cvtColor((normalizated * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
-
-            # Redimensiona todas as imagens antes de inserir no fundo
-            # imgWarped_resized              = cv2.resize(imgWarped, (bloco_larg, bloco_alt))
-            # imgQuestions_resized           = cv2.resize(imgQuestions_color, (bloco_larg, bloco_alt))
-            # imgThresh_resized              = cv2.resize(imgTresh_color, (bloco_larg, bloco_alt))
-            # blurred_resized               = cv2.resize(blurred_color, (bloco_larg, bloco_alt))
-            # resizedImageWithFeedback_res   = cv2.resize(resizedImageWithFeedback, (bloco_larg, bloco_alt))
-            # blankImage_resized             = cv2.resize(normalizated, (bloco_larg, bloco_alt))
-            # blankImageWithFeedback_res     = cv2.resize(blankImageWithFeedback, (bloco_larg, bloco_alt))
-            # imgFinal_resized               = cv2.resize(imgFinal, (bloco_larg, bloco_alt))
-
-            # # Monta os 8 blocos no fundo
-            # fundo[0 * bloco_alt:1 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = imgWarped_resized
-            # fundo[0 * bloco_alt:1 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = imgQuestions_resized
-            # fundo[0 * bloco_alt:1 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = imgThresh_resized
-            # fundo[0 * bloco_alt:1 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = blurred_resized
-
-            # fundo[1 * bloco_alt:2 * bloco_alt, 0 * bloco_larg:1 * bloco_larg] = blankImage_resized
-            # fundo[1 * bloco_alt:2 * bloco_alt, 1 * bloco_larg:2 * bloco_larg] = blankImageWithFeedback_res
-            # fundo[1 * bloco_alt:2 * bloco_alt, 2 * bloco_larg:3 * bloco_larg] = resizedImageWithFeedback_res
-            # fundo[1 * bloco_alt:2 * bloco_alt, 3 * bloco_larg:4 * bloco_larg] = imgFinal_resized
-
-            # cv2.imshow("teste TOZERO INV", fundo)
-
-            #! ------ test ------
-            
             cv2.imwrite('video.jpg', imgFinal)
 
             yield (b'--frame\r\n'
