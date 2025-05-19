@@ -1,10 +1,13 @@
 import cv2
 import utils
+import excel
 import os
 import sys
 import webview
 import numpy as np
 from flask import Flask, render_template, Response, request, jsonify, json
+
+file = "ProcessoSeletivo.xlsx"
 
 base_dir = ''
 app = Flask(__name__,
@@ -34,10 +37,10 @@ questions = 20
 options = 5
 questionsOverlapMargin = 5
 considerQuestion = 0
-correctAnswers, _ = utils.readExcelGabarito()
+correctAnswers, _ = excel.readExcelGabarito(file)
 answersList = []
 answersListWithOptions = []
-candidate = utils.readExcelNome()
+candidate = excel.readExcelNome(file)
 
 # Aruco settings
 arUcoPoints = [326, 683, 779, 856]
@@ -66,13 +69,13 @@ def register():
     race = request.form.get('race')
     grade = request.form.get('grade')
     answers = request.form.get('answers')
-    return utils.registerCandidate(candidate, race, answers, grade, answersListWithOptions)
+    return excel.registerCandidate(candidate, race, answers, grade, answersListWithOptions, file)
 
 
 @app.route('/candidate', methods=['GET'])
 def getCandidate():
     candidate = request.args.get('candidate')
-    exists, _ = utils.findCandidate(candidate)
+    exists, _ = excel.findCandidate(candidate, file)
 
     if exists:
         return 'Candidate exists', 200
@@ -82,13 +85,13 @@ def getCandidate():
 
 @app.route('/questionsValues')
 def questionsValues():
-    _, values = utils.readExcelGabarito()
+    _, values = excel.readExcelGabarito(file)
     return values
 
 
 @app.route('/getGabarito')
 def getGabarito():
-    gabarito, _ = utils.readExcelGabarito()
+    gabarito, _ = excel.readExcelGabarito(file)
     return gabarito
 
 
