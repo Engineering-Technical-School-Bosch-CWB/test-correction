@@ -1,5 +1,13 @@
 import xlwings as xw
 
+class Color:
+    # Cores
+    LIGHT_GREEN = (198, 239, 206)
+    LIGHT_RED = (255, 199, 206)
+    LIGHT_GREY = (217, 217, 217)
+    YELLOW = (255, 255, 0)
+ 
+
 def readExcelNome(file):
     wb = xw.Book(file)
     records_tab = wb.sheets['Registros']
@@ -38,6 +46,12 @@ def readExcelGabarito(file):
 
     return answers, score
 
+def getGabaritos(file):
+    wb = xw.Book(file)
+    answers_tab = wb.sheets['Gabaritos'].used_range
+    different_tests = answers_tab.value[0][2:]
+    return different_tests
+
 
 def readExcelGabarito_advanced(file, test):
     wb = xw.Book(file)
@@ -61,7 +75,7 @@ def readExcelGabarito_advanced(file, test):
 def registerCandidate(candidate, race, answers, grade, answersWithOptions, file):
     wb = xw.Book(file)
     records_tab = wb.sheets['Registros']
-    exists, line = findCandidate(candidate)
+    exists, line = findCandidate(candidate, file)
 
     records_tab.cells(line, 2).value = grade
 
@@ -76,9 +90,12 @@ def registerCandidate(candidate, race, answers, grade, answersWithOptions, file)
                 break
         if(not added):
             _answers.append("-")
-
     for i in range(len(_answers)):
-        records_tab.cells(line, i+2).value = _answers[i]
+        records_tab.cells(line, i+3).value = _answers[i]
+        if answers[i] == '1':
+            records_tab.cells(line, i+3).color = Color.LIGHT_GREEN
+        else:
+            records_tab.cells(line, i+3).color = Color.LIGHT_RED
 
     wb.save()
     

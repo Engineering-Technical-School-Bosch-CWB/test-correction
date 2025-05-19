@@ -1,3 +1,4 @@
+import xlwings as xw
 import cv2
 import utils
 import excel
@@ -61,6 +62,10 @@ def index():
 @app.route('/candidates')
 def candidates():
     return candidate
+
+@app.route('/getTestsTitle')
+def getTestsTitle():
+    print("alguma coisa aqui")
 
 # @app.route("/getCams")
 # def getCams():
@@ -207,12 +212,12 @@ def gen():
                     [
                         frame,
                         imgWarpedWithCoordinates,
-                        # imgQuestions,
-                        imgTresh,
-                        blurred,
-                        resizedImageWithFeedback,
                         normalizated,
+                        # imgQuestions,
+                        blurred,
+                        imgTresh,
                         blankImageWithFeedback,
+                        resizedImageWithFeedback,
                         imgFinal
                     ])
 
@@ -235,4 +240,8 @@ def video_feed():
 
 if __name__ == '__main__':
     webview.start()
+    xw.Book(file).save()
+    xw.Book().close()
+    xw.os.close(0)
+    os._exit(0)    
     print('closed')
