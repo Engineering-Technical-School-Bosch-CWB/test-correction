@@ -6,6 +6,8 @@ import webview
 import numpy as np
 from flask import Flask, render_template, Response, request, jsonify, json
 
+args = sys.argv
+
 base_dir = ''
 app = Flask(__name__,
             static_folder=os.path.join(base_dir, 'static'),
@@ -17,6 +19,7 @@ if hasattr(sys, '_MEIPASS'):
     base_dir = os.path.join(sys._MEIPASS)
 
 _availableCams = utils.listAvailableCams()
+print(_availableCams)
 # _selectedCam = _availableCams[len(_availableCams) - 1]
 _selectedCam = 1
 
@@ -196,17 +199,19 @@ def gen():
 
             imgFinal = cv2.resize(imgFinal, (340, 620))
 
-            utils.showDebug(
-                [
-                    imgWarpedWithCoordinates,
-                    imgQuestions,
-                    imgTresh,
-                    blurred,
-                    resizedImageWithFeedback,
-                    normalizated,
-                    blankImageWithFeedback,
-                    imgFinal
-                ])
+            if '--debug' in args:
+                utils.showDebug(
+                    [
+                        frame,
+                        imgWarpedWithCoordinates,
+                        # imgQuestions,
+                        imgTresh,
+                        blurred,
+                        resizedImageWithFeedback,
+                        normalizated,
+                        blankImageWithFeedback,
+                        imgFinal
+                    ])
 
             cv2.imwrite('video.jpg', imgFinal)
 
@@ -227,3 +232,4 @@ def video_feed():
 
 if __name__ == '__main__':
     webview.start()
+    print('closed')
