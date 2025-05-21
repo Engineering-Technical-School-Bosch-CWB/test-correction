@@ -11,8 +11,8 @@ from flask import Flask, render_template, Response, request, jsonify, json
 args = sys.argv
 
 file = "ProcessoSeletivo.xlsx"
-
 base_dir = ''
+
 app = Flask(__name__,
             static_folder=os.path.join(base_dir, 'static'),
             template_folder=os.path.join(base_dir, 'templates')
@@ -41,11 +41,11 @@ questions = 20
 options = 5
 questionsOverlapMargin = 5
 considerQuestion = 0
-correctAnswers, _ = excel.readExcelGabarito(file)
 answersList = []
 answersListWithOptions = []
 candidate = excel.readExcelNome(file)
-
+currentTemplate = 1
+correctAnswers, _ = excel.readExcelGabarito_advanced(file, currentTemplate)
 # Aruco settings
 arUcoPoints = [326, 683, 779, 856]
 arUcosCornerPositions = {arUcoPoints[0]: (0, 0), arUcoPoints[1]: (
@@ -65,11 +65,9 @@ def candidates():
 
 @app.route('/getTestsTitle')
 def getTestsTitle():
-    print("alguma coisa aqui")
-
-# @app.route("/getCams")
-# def getCams():
-#     return (_availableCams, _selectedCam)
+    global currentTemplate
+    templates = excel.getGabaritos(file)
+    return {'templates':templates, 'current': currentTemplate}
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -91,15 +89,27 @@ def getCandidate():
     return 'Candidate not found', 403
 
 
+@app.route('/selectTest', methods=['POST'])
+def selectTest():
+    global currentTemplate, correctAnswers
+    data = request.get_json()
+    currentTemplate = data['index']
+    correctAnswers, _ = excel.readExcelGabarito_advanced(file, currentTemplate)
+
+    print(currentTemplate)
+    return "Success", 200
+
+
 @app.route('/questionsValues')
 def questionsValues():
-    _, values = excel.readExcelGabarito(file)
+    print(f"Current template in questionValues: {currentTemplate}")
+    _, values = excel.readExcelGabarito_advanced(file, currentTemplate)
     return values
 
 
 @app.route('/getGabarito')
 def getGabarito():
-    gabarito, _ = excel.readExcelGabarito(file)
+    gabarito, _ = excel.readExcelGabarito_advanced(file, currentTemplate)
     return gabarito
 
 
@@ -239,9 +249,8 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    webview.start()
+    # webview.start()
     xw.Book(file).save()
-    xw.Book().close()
-    xw.os.close(0)
+    app.run()    
     os._exit(0)    
     print('closed')

@@ -1,33 +1,103 @@
+
 let toggle = true;
 
 let countries = []
 let testAnswers = []
+let testsLabels = []
 
 
-$.ajax({
-    url: '/candidates',
-    type: 'GET',
-    datatype: "json",
-    async: false,
-    success: function(response) {
-        countries = response
-    }
-});
+function loadData() {
+    
+    $.ajax({
+        url: '/candidates',
+        type: 'GET',
+        datatype: "json",
+        async: false,
+        success: function(response) {
+            countries = response
+        }
+    });
 
-$.ajax({
-    url: '/getGabarito',
-    type: 'GET',
-    datatype: "json",
-    async: false,
-    success: function(response) {
-        testAnswers = response
-    }
-});
+    $.ajax({
+        url: '/getGabarito',
+        type: 'GET',
+        datatype: "json",
+        async: false,
+        success: function(response) {
+            testAnswers = response
+        }   
+    });
 
-let questions = document.getElementsByName("questionHtmlDiv");
+    $.ajax({
+        url: '/getTestsTitle',
+        type: 'GET',
+        datatype: "json",
+        async: false,
+        success: function(response) {
+            testsLabels = response.templates
 
-for (let index = 0; index < testAnswers.length; index++) 
-    questions[index].innerHTML = (index + 1) + " | " + testAnswers[index][1];
+            try {
+                addTestsTitle(response.templates, response.current)
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    })
+    _getGrade()
+    updateQuestionsCheckboxes()
+}
+loadData()
+
+
+function selectTest(params) {
+    
+    $.ajax({
+        url: '/selectTest',
+        type: 'POST',
+        data: JSON.stringify(params),
+        contentType: "application/json",
+        success: function()
+        {
+            loadData()
+        },
+        error: function(e)
+        {
+            alert(e)
+        }
+    })
+}
+
+function addTestsTitle(tests, current){
+    var test_container = document.getElementById('select_test_radio')
+    test_container.innerHTML = ""
+    tests.forEach((option, index) => {
+        var newOptionContainer = document.createElement('span');
+        var newOption = document.createElement('input');
+        newOption.setAttribute('type', 'radio');
+        newOption.setAttribute('id', `test_title_${option}`);
+        newOption.setAttribute('value', index);
+        newOption.setAttribute('name', 'test_title');
+        if(current == index)
+            newOption.setAttribute('checked', true)
+        newOption.onclick = () => {
+            selectTest({index: index, value: option})
+        }
+        var newLabel = document.createElement('label')
+        newLabel.setAttribute('for', `test_title_${option}`);
+        newLabel.innerText = option
+        newOptionContainer.appendChild(newOption)
+        newOptionContainer.appendChild(newLabel)
+        test_container.appendChild(newOptionContainer)
+    });
+}
+function updateQuestionsCheckboxes() {
+    let questions = document.getElementsByName("questionHtmlDiv");
+    
+    for (let index = 0; index < testAnswers.length; index++) 
+        questions[index].innerHTML = (index + 1) + " | " + testAnswers[index][1];
+}
+updateQuestionsCheckboxes()
 
 function search() {
 

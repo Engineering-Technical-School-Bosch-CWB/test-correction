@@ -16,7 +16,12 @@ body {
 #answers {
   display: none;
 }
-
+#select_test_radio{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
 .navLine {
     top: 0;
     background-image: url(nav.svg);

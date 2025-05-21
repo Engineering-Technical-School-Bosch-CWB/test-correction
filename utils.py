@@ -34,6 +34,7 @@ def splitBoxes(img, questions, options, questionsOverlapMargin):
 
     return boxes, int(total/(questions*options))
 
+
 def giveGrades(answers, rigthAnswers):
     grade = 0
     
@@ -65,8 +66,6 @@ def showAnswers(img, answers, questions, choices):
             cv2.ellipse(img, (cX,cY), (50, 15), 0, 0, 360, (0, 0, 255), -1)
 
     return img
-
-#! ================== making debug image to view data ============================
 
 def showDebug(images, width = 1080, height = 720, title= "debug"):
     background = np.zeros((height, width, 3), dtype=np.uint8)

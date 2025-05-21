@@ -1,7 +1,9 @@
 var candidateName = document.querySelector("#candidateName");
 
-function getGrade()
+function _getGrade()
 {
+    console.log('getGradeeeee')
+
     let grade = 0;
     var answers = [];
     let questionsPoints = []
@@ -31,7 +33,6 @@ function getGrade()
             answers.push(0)
     })
 
-    console.log(questionsPoints)    
     return [grade, answers];
 }
 
@@ -57,24 +58,11 @@ function cleanQuestionCheckboxes()
     });
 }
 
-function getActiveRace()
-{
-    let raceChecked = "none"
-    var checkboxes = document.getElementsByName('checkBox')
-    checkboxes.forEach((item) => {
-        if (item.checked == true)
-        {
-            raceChecked = item.id;
-        }
-    });
-    
-    return raceChecked
-}
 
 function insertData(exists)
 {
     let candidateRace = getActiveRace();
-    var results = getGrade();
+    var results = _getGrade();
 
     $.ajax({
         url: '/register',
@@ -104,7 +92,6 @@ function insertData(exists)
 
 function register()
 {
-    let candidateRace = getActiveRace();
 
     if (candidateName.innerHTML != 'Selecione o Candidato')
     {
