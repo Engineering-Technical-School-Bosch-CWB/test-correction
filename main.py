@@ -25,7 +25,7 @@ if hasattr(sys, '_MEIPASS'):
 _availableCams = utils.listAvailableCams()
 print(_availableCams)
 # _selectedCam = _availableCams[len(_availableCams) - 1]
-_selectedCam = 1
+_selectedCam = 0
 
 # Camera settings
 vid_capture = cv2.VideoCapture(_selectedCam, cv2.CAP_DSHOW)
@@ -45,6 +45,7 @@ answersList = []
 answersListWithOptions = []
 candidate = excel.readExcelNome(file)
 currentTemplate = 1
+_availableTemplates = []
 correctAnswers, _ = excel.readExcelGabarito_advanced(file, currentTemplate)
 # Aruco settings
 arUcoPoints = [326, 683, 779, 856]
@@ -65,17 +66,18 @@ def candidates():
 
 @app.route('/getTestsTitle')
 def getTestsTitle():
-    global currentTemplate
+    global currentTemplate, _availableTemplates
     templates = excel.getGabaritos(file)
+    _availableTemplates = templates
     return {'templates':templates, 'current': currentTemplate}
 
 @app.route('/register', methods=['POST'])
 def register():
     candidate = request.form.get('candidate')
-    race = request.form.get('race')
+    race = ''
     grade = request.form.get('grade')
     answers = request.form.get('answers')
-    return excel.registerCandidate(candidate, race, answers, grade, answersListWithOptions, file)
+    return excel.registerCandidate(candidate, race, answers, grade, answersListWithOptions, file, _availableTemplates[currentTemplate])
 
 
 @app.route('/candidate', methods=['GET'])
@@ -249,8 +251,8 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    # webview.start()
+    webview.start()
     xw.Book(file).save()
-    app.run()    
+    # app.run()    
     os._exit(0)    
     print('closed')

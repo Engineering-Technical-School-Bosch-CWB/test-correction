@@ -72,12 +72,13 @@ def readExcelGabarito_advanced(file, test):
     return answers[test], score
 
 
-def registerCandidate(candidate, race, answers, grade, answersWithOptions, file):
+def registerCandidate(candidate, race, answers, grade, answersWithOptions, file, test = ''):
     wb = xw.Book(file)
     records_tab = wb.sheets['Registros']
     exists, line = findCandidate(candidate, file)
 
     records_tab.cells(line, 2).value = grade
+    records_tab.cells(line, 3).value = test
 
     _option = ['a','b','c','d','e']
     _answers = []
@@ -91,11 +92,11 @@ def registerCandidate(candidate, race, answers, grade, answersWithOptions, file)
         if(not added):
             _answers.append("-")
     for i in range(len(_answers)):
-        records_tab.cells(line, i+3).value = _answers[i]
+        records_tab.cells(line, i+4).value = _answers[i]
         if answers[i] == '1':
-            records_tab.cells(line, i+3).color = Color.LIGHT_GREEN
+            records_tab.cells(line, i+4).color = Color.LIGHT_GREEN
         else:
-            records_tab.cells(line, i+3).color = Color.LIGHT_RED
+            records_tab.cells(line, i+4).color = Color.LIGHT_RED
 
     wb.save()
     

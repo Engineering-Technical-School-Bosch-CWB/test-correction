@@ -61,7 +61,6 @@ function cleanQuestionCheckboxes()
 
 function insertData(exists)
 {
-    let candidateRace = getActiveRace();
     var results = _getGrade();
 
     $.ajax({
@@ -69,7 +68,6 @@ function insertData(exists)
         type: 'POST',
         data: {
             'candidate': candidateName.innerHTML,
-            'race': candidateRace,
             'grade': results[0],
             'answers': results[1].join('')
         },
